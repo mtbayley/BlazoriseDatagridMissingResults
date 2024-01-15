@@ -1,0 +1,33 @@
+﻿@page "/"
+@rendermode InteractiveServer
+@using Bogus;
+
+<PageTitle>Home</PageTitle>
+
+<DataGrid TItem="TestClass" Data="@TestData" Hoverable Responsive Groupable ShowGrouping PageSize="5000" FixedHeader FixedHeaderDataGridHeight="85vh" FixedHeaderDataGridMaxHeight="85vh">
+    <DataGridColumns>
+        <DataGridColumn TItem="TestClass" Caption="Employee" Field="@nameof(TestClass.EmployeeName)" Groupable Sortable SortDirection="SortDirection.Ascending" />
+        <DataGridColumn TItem="TestClass" Caption="Date" Field="@nameof(TestClass.Date)" Groupable />
+        <DataGridColumn TItem="TestClass" Caption="Hours" Field="@nameof(TestClass.Hours)" Groupable />
+    </DataGridColumns>
+</DataGrid>
+
+@code {
+
+    private List<TestClass> TestData { get; set; } = [];
+
+    protected override void OnInitialized()
+    {
+        //Set the randomizer seed if you wish to generate repeatable data sets.
+        Randomizer.Seed = new Random(1234);
+
+        TestData = new Faker<TestClass>()
+            .RuleFor(o => o.EmployeeName, f => f.Name.FirstName())
+            .RuleFor(o => o.Date, f => f.Date.Recent(30))
+            .RuleFor(o => o.Hours, f => f.Random.Int(0, 8))
+            .Generate(2000);
+
+        base.OnInitialized();
+    }
+}
+
